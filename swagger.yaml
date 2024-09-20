@@ -1,0 +1,236 @@
+openapi: 3.0.0
+info:
+  title: Stack and Key-Value Store API
+  version: 1.0.0
+  description: API for managing a stack and a key-value store with TTL functionality.
+paths:
+  /stack:
+    post:
+      summary: Add an item to the stack
+      description: Adds an item to the stack.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                item:
+                  type: string
+                  example: exampleItem
+              required:
+                - item
+      responses:
+        '201':
+          description: Item added to the stack successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Added 'exampleItem' to stack
+                  stack:
+                    type: array
+                    items:
+                      type: string
+        '400':
+          description: Bad Request: Missing 'item' field
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Bad Request: 'item' is required
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+    get:
+      summary: Get and remove the top item from the stack
+      description: Removes and returns the top item from the stack.
+      responses:
+        '200':
+          description: Top item returned and removed from the stack.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  topItem:
+                    type: string
+                    example: exampleItem
+                  stack:
+                    type: array
+                    items:
+                      type: string
+        '404':
+          description: Stack is empty
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Not Found: Stack is empty
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+  /kvs/set:
+    post:
+      summary: Set a key-value pair
+      description: Sets a key-value pair with an optional TTL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key:
+                  type: string
+                  example: name
+                value:
+                  type: string
+                  example: John
+                ttl:
+                  type: integer
+                  example: 30
+                  description: Time-to-live in seconds (optional)
+              required:
+                - key
+                - value
+      responses:
+        '201':
+          description: Key-value pair added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Set key 'name' to 'John'
+                  store:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        value:
+                          type: string
+                        expireAt:
+                          type: string
+                          format: date-time
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+  /kvs/get/{key}:
+    get:
+      summary: Get a value by key
+      description: Gets a value by key, respecting the TTL if set.
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+          example: name
+      responses:
+        '200':
+          description: Value returned for the given key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  value:
+                    type: string
+                    example: John
+        '404':
+          description: Key not found or expired
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Not Found: Key 'name' does not exist
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+  /kvs/delete/{key}:
+    delete:
+      summary: Delete a key-value pair
+      description: Deletes a key-value pair by key.
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+          example: name
+      responses:
+        '200':
+          description: Key-value pair deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Deleted key 'name'
+        '404':
+          description: Key not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Not Found: Key 'name' does not exist
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Internal Server Error
+components:
+  schemas: {}

@@ -1,0 +1,21 @@
+{
+  "name": "tmg-api",
+  "version": "1.0.0",
+  "description": "Test Api",
+  "main": "server.js",
+  "scripts": {
+    "test": "npx jest",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
